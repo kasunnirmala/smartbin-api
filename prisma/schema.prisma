@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Level1 {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String?
+  status    Boolean  @default(true)
+  Level2    Level2[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Level2 {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String?
+  level1    Level1   @relation(fields: [level1Id], references: [id])
+  status    Boolean  @default(true)
+  level1Id  Int
+  Level3    Level3[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Level3 {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  name      String?
+  level2    Level2   @relation(fields: [level2Id], references: [id])
+  status    Boolean  @default(true)
+  level2Id  Int
+  Device    Device[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Device {
+  id               Int       @id @default(autoincrement())
+  binId            String    @unique
+  status           Boolean   @default(true)
+  lastUpdatedValue Float?
+  level3           Level3    @relation(fields: [level3Id], references: [id])
+  level3Id         Int
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  History          History[]
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  bin       Device   @relation(fields: [deviceId], references: [id])
+  status    Boolean  @default(true)
+  value     Float?
+  data      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deviceId  Int
+}
