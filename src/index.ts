@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 const app = express();
 const port = process.env.PORT || "3000";
 import level1Router from "./routes/level1";
@@ -6,7 +7,7 @@ import level2Router from "./routes/level2";
 import level3Router from "./routes/level3";
 import deviceRouter from "./routes/device";
 import historyRouter from "./routes/history";
-
+app.use(cors());
 app.use(express.json());
 // app.get("/", (req, res) => {
 //   res.send("Hello World!");
