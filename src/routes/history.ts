@@ -21,19 +21,20 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  let data: History = req.body;
+  const binId = req.body.binId;
+  let data: History = { value: req.body.value };
+  data.data = JSON.stringify(req.body);
   const device: Device = await prisma.device.findUnique({
     where: {
-      binId: data.binId,
+      binId: binId,
     },
   });
   data.deviceId = device.id;
-  device.lastUpdatedValue = data.value;
   const [hisory, updatedDevice] = await prisma.$transaction([
     prisma.history.create({ data }),
     prisma.device.update({
       where: { id: device.id },
-      data,
+      data: { lastUpdatedValue: data.value },
     }),
   ]);
 
