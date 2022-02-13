@@ -5,18 +5,26 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 router.get("/", async (req, res) => {
-  //   let level1: Level1 = {
-  //     code: "L1T1",
-  //     name: "Level1 Test1",
-  //   };
-  const job = await prisma.level1.findMany();
+  const level1s = await prisma.level1.findMany();
+  res.json(level1s);
+});
 
-  //   const [posts, totalPosts] = await prisma.$transaction([
-  //     prisma.post.findMany({ where: { title: { contains: 'prisma' } } }),
-  //     prisma.post.count(),
-  //   ])
+router.get("/:id", async (req, res) => {
+  const id: number = parseInt(req.params.id);
+  const level1 = await prisma.level1.findUnique({
+    where: {
+      id,
+    },
+  });
+  res.json(level1);
+});
 
-  res.json(job);
+router.post("/", async (req, res) => {
+  let data: Level1 = req.body;
+  const level1 = await prisma.level1.create({
+    data,
+  });
+  res.json(level1);
 });
 
 export default router;
