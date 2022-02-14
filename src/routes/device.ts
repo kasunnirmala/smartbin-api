@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 
 router.get("/", async (req, res) => {
   try {
-    const devices = await prisma.device.findMany();
+    const devices = await prisma.device.findMany({
+      include: { level3: true },
+    });
     res.json(devices);
   } catch (err) {
     res.status(500).send(err.message);
@@ -15,28 +17,36 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-  const id: number = parseInt(req.params.id);
-  const device = await prisma.device.findUnique({
-    where: {
-      id,
-    },
-  });
-  res.json(device);
-} catch (err) {
-  res.status(500).send(err.message);
-}
+    const id: number = parseInt(req.params.id);
+    const device = await prisma.device.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        History: {
+          take: 10,
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+    res.json(device);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 router.post("/", async (req, res) => {
   try {
-  let data: Device = req.body;
-  const device = await prisma.device.create({
-    data,
-  });
-  res.json(device);
-} catch (err) {
-  res.status(500).send(err.message);
-}
+    let data: Device = req.body;
+    const device = await prisma.device.create({
+      data,
+    });
+    res.json(device);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 
 export default router;
