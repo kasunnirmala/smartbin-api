@@ -16,6 +16,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
+
   try {
     const id: number = parseInt(req.params.id);
     const device = await prisma.device.findUnique({
@@ -48,5 +49,40 @@ router.post("/", async (req, res) => {
     res.status(500).send(err.message);
   }
 });
+
+router.delete("/:id", async (req, res) => {
+  //console.log(req.params);
+  try {
+    const id: number = parseInt(req.params.id);
+    const device = await prisma.device.delete({
+      where: {
+        id:id,
+      },
+    });
+    res.json(device);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.post("/edit/", async (req, res) => {
+  try {
+    let data = req.body;
+    let idList = data.id.split('-')
+    //console.log(data)
+    const device = await prisma.device.update({
+      where: {
+        id:parseInt(idList[idList.length-1]),
+      },
+      data:{
+        binId:data.binId,
+      },
+    });
+    res.json(device);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 
 export default router;

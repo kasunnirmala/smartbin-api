@@ -39,4 +39,39 @@ router.post("/", async (req, res) => {
 }
 });
 
+router.delete("/:id", async (req, res) => {
+  //console.log(req.params);
+  try {
+    const id: number = parseInt(req.params.id);
+    const level1 = await prisma.level1.delete({
+      where: {
+        id:id,
+      },
+    });
+    res.json(level1);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+router.post("/edit/", async (req, res) => {
+  try {
+    let data = req.body;
+    let idList = data.id.split('-')
+    //console.log(data)
+    const level1 = await prisma.level1.update({
+      where: {
+        id:parseInt(idList[idList.length-1]),
+      },
+      data:{
+        code:data.code,
+        name:data.name
+      },
+    });
+    res.json(level1);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 export default router;
