@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 const app = express();
-const port = process.env.PORT || "3000";
+const port = process.env.PORT || "3001";
 import level1Router from "./routes/level1";
 import level2Router from "./routes/level2";
 import level3Router from "./routes/level3";

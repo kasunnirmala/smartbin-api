@@ -6,7 +6,11 @@ const prisma = new PrismaClient();
 
 router.get("/", async (req, res) => {
   try {
-  const level1s = await prisma.level1.findMany();
+  const level1s = await prisma.level1.findMany({
+    where: {
+      status:true,
+    },
+  });
   res.json(level1s);
 } catch (err) {
   res.status(500).send(err.message);
@@ -19,6 +23,7 @@ router.get("/:id", async (req, res) => {
   const level1 = await prisma.level1.findUnique({
     where: {
       id,
+      status:true,
     },
   });
   res.json(level1);
@@ -43,9 +48,36 @@ router.delete("/:id", async (req, res) => {
   //console.log(req.params);
   try {
     const id: number = parseInt(req.params.id);
-    const level1 = await prisma.level1.delete({
+    const level1 = await prisma.level1.update({
       where: {
         id:id,
+      },
+      data:{
+        status: false,
+      },
+    });
+    await prisma.level2.updateMany({
+      where: {
+        level1:{status:false,}
+      },
+      data:{
+        status: false,
+      },
+    });
+    await prisma.level3.updateMany({
+      where: {
+        level2:{status:false,}
+      },
+      data:{
+        status: false,
+      },
+    });
+    await prisma.device.updateMany({
+      where: {
+        level3:{status:false,}
+      },
+      data:{
+        status: false,
       },
     });
     res.json(level1);

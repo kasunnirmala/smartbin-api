@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 router.get("/", async (req, res) => {
   try {
     const devices = await prisma.device.findMany({
+      where: {
+        status : true,
+      },
       include: { level3: true },
     });
     res.json(devices);
@@ -19,9 +22,11 @@ router.get("/:id", async (req, res) => {
 
   try {
     const id: number = parseInt(req.params.id);
+    console.log(id)
     const device = await prisma.device.findUnique({
       where: {
         id,
+        status:true,
       },
       include: {
         History: {
@@ -54,9 +59,12 @@ router.delete("/:id", async (req, res) => {
   //console.log(req.params);
   try {
     const id: number = parseInt(req.params.id);
-    const device = await prisma.device.delete({
+    const device = await prisma.device.update({
       where: {
         id:id,
+      },
+      data:{
+        status: false,
       },
     });
     res.json(device);
